@@ -67,8 +67,7 @@ except ImportError:
 
 
 logging.basicConfig(level=logging.INFO)
-PY2 = sys.version_info[0] == 2
-DIR = Path(__file__).parent
+DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
 def download_url(url, output_dir=""):
     name = os.path.basename(url)
