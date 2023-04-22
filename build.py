@@ -91,7 +91,7 @@ def get_vcvars():
     return vcvars_bat
 
 
-def main():
+def build():
     vcvars_bat = get_vcvars()
 
     external_dir = DIR / "external"
@@ -114,6 +114,7 @@ def main():
         subprocess.call([installer, "/S", "/D={fbx_sdk_dir}".format(**locals())], shell=True)
     shutil.rmtree(tmpdir)
 
+    # NOTES(timmyliang): extract zip files
     sip_zip = next(iter(external_dir.glob("sip*.zip")))
     assert sip_zip, "sip zip not found."
     flex_zip = next(iter(external_dir.glob("*flex*.zip")))
@@ -139,7 +140,7 @@ def main():
     # NOTES(timmyliang): prepare env
     os.environ["SIP_ROOT"] = str(SIP_ROOT)
     os.environ["FBXSDK_ROOT"] = str(fbx_sdk_dir)
-    os.environ["path"] = os.pathsep.join(os.getenv("path").split(os.pathsep) + [str(flex_folder)])
+    os.environ["PATH"] = os.pathsep.join(os.getenv("PATH").split(os.pathsep) + [str(flex_folder)])
 
     # NOTES(timmyliang): prepare sip build
     build_script = os.path.join(SIP_ROOT, "build.py")
@@ -151,17 +152,16 @@ def main():
     build_version = "Python{major}_x64".format(major=major)
     subprocess.call([vcvars_bat, "&", sys.executable, str(script_path), build_version, "buildsip"], cwd=os.getcwd())
 
-    # NOTES(timmyliang): copy build path
+    # NOTES(timmyliang): copy modified sip files into python binding folder
     version_folder = DIR / "{major}.{minor}".format(major=major, minor=minor)
     if version_folder.exists():
         shutil.rmtree(version_folder)
     os.mkdir(version_folder)
 
-    # NOTES(timmyliang): copy modified sip files into python binding folder
     build_dir = fbx_binding_dir / "build" / "Distrib"
     for path in build_dir.rglob("*.py*"):
         path.rename(version_folder / path.name)
 
 
 if __name__ == "__main__":
-    main()
+    build()
