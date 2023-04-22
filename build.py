@@ -69,6 +69,7 @@ except ImportError:
 logging.basicConfig(level=logging.INFO)
 DIR = Path(os.path.dirname(os.path.abspath(__file__)))
 
+
 def download_url(url, output_dir=""):
     name = os.path.basename(url)
     output_dir and not os.path.isdir(output_dir) and os.makedirs(output_dir)
@@ -147,6 +148,11 @@ def build():
     subprocess.call([sys.executable, build_script, "prepare"], cwd=SIP_ROOT)
 
     # NOTES(timmyliang): build fbx.pyd
+    src_sip_dir = DIR / "sip"
+    dst_sip_dir = fbx_binding_dir / "sip"
+    for sip_path in src_sip_dir.glob("*.sip"):
+        shutil.copyfile(sip_path, dst_sip_dir / sip_path.name)
+
     script_path = fbx_binding_dir / "PythonBindings.py"
     major, minor = sys.version_info[:2]
     build_version = "Python{major}_x64".format(major=major)

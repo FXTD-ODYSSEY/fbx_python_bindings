@@ -322,6 +322,12 @@ public:
     FbxPropertyInteger1                      FrameSamplingCount;
     FbxPropertyESamplingType                 FrameSamplingType;
 
+    FbxVector4 EvaluateLookAtPosition(const FbxTime& pTime=FBXSDK_TIME_ZERO) const;
+    FbxVector4 EvaluatePosition(const FbxTime& pTime=FBXSDK_TIME_ZERO) const;
+    FbxVector4 EvaluateUpDirection(const FbxVector4& pCameraPosition, const FbxVector4& pLookAtPosition, const FbxTime& pTime=FBXSDK_TIME_ZERO) const;
+    FbxMatrix ComputeProjectionMatrix(const int pWidth, const int pHeight, const bool pVerticalFOV = true) const;
+    FbxVector4 ComputeScreenToWorld(float pX, float pY, float pWidth, float pHeight, const FbxTime& pTime=FBXSDK_TIME_INFINITE) const;
+
 protected:
     virtual ~FbxCamera();
 };
